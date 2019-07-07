@@ -26,23 +26,24 @@ const replaceTemplate = (temp, product) => {
 };
 
 const httpServer = http.createServer((req, res) => {
-    const pathName = req.url;
-    // OVERVIEW
-    if (pathName === '/' || pathName === '/overview') {
+    const { query, pathname } = url.parse(req.url, true);
+
+    // OVERVIEW Page
+    if (pathname === '/' || pathname === '/overview') {
         res.writeHead(200, {'content-type': 'text/html'});
         const cardsHtml = dataObj.map(el => replaceTemplate(tempCard, el)).join('');
         const output = tempOverview.replace('{%PRODUCT_CARDS%}', cardsHtml);
         res.end(output);
-    } else if (pathName === '/product') {
-
-    // PRODUCT
-        res.end('This is PRODUCT page');
-
+    // PRODUCT Page
+    } else if (pathname === '/product') {
+        res.writeHead(200, {'content-type': 'text/html'});
+        const product = dataObj[query.id];
+        const output = replaceTemplate(tempProduct, product);
+        res.end(output);
     // API
-    } else if (pathName === '/api') {
+    } else if (pathname === '/api') {
         res.writeHead(200, {'content-type': 'application/json'});
         res.end(data);
-
     // NOT FOUND
     } else {
         res.writeHead(404, {'content-type': 'text/html'});
